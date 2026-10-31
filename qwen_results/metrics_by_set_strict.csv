@@ -1,0 +1,23 @@
+System,Test set,Prompts,Accuracy,Precision,Recall (unsafe caught),F1,Safe prompts blocked
+Kavach fine-tune (ours),Hinglish & India (new),40,87.5,100.0,75.0,85.7,0.0
+Qwen3Guard-4B base,Hinglish & India (new),40,92.5,100.0,85.0,91.9,0.0
+Kavach v4 (previous RoBERTa),Hinglish & India (new),40,65.0,100.0,30.0,46.2,0.0
+ProtectAI injection v2,Hinglish & India (new),40,57.5,80.0,20.0,32.0,5.0
+toxic-bert,Hinglish & India (new),40,52.5,66.7,10.0,17.4,5.0
+Kavach fine-tune (ours),Jailbreak prompts,229,88.2,85.0,90.6,87.7,13.8
+Qwen3Guard-4B base,Jailbreak prompts,229,93.9,91.8,95.3,93.5,7.3
+Kavach v4 (previous RoBERTa),Jailbreak prompts,229,66.4,58.1,98.1,73.0,61.0
+ProtectAI injection v2,Jailbreak prompts,229,91.3,97.8,83.0,89.8,1.6
+toxic-bert,Jailbreak prompts,229,55.0,80.0,3.8,7.2,0.8
+Kavach fine-tune (ours),Kavach held-out (own tests),500,99.8,99.2,100.0,99.6,0.3
+Qwen3Guard-4B base,Kavach held-out (own tests),500,97.2,90.6,99.2,94.7,3.5
+Kavach v4 (previous RoBERTa),Kavach held-out (own tests),500,97.0,91.8,96.9,94.3,2.9
+ProtectAI injection v2,Kavach held-out (own tests),500,74.8,100.0,0.8,1.6,0.0
+toxic-bert,Kavach held-out (own tests),500,88.6,97.3,56.7,71.6,0.5
+Kavach fine-tune (ours),ToxicChat (real users),500,89.2,79.8,71.6,75.5,5.5
+Qwen3Guard-4B base,ToxicChat (real users),500,93.4,78.6,98.3,87.4,8.1
+Kavach v4 (previous RoBERTa),ToxicChat (real users),504,58.5,34.5,84.0,48.9,49.4
+ProtectAI injection v2,ToxicChat (real users),504,78.0,60.0,20.2,30.2,4.2
+toxic-bert,ToxicChat (real users),504,79.4,89.5,14.3,24.6,0.5
+Kavach fine-tune (ours),Training holdout (same kind of data),634,95.6,93.9,93.9,93.9,3.4
+Qwen3Guard-4B base,Training holdout (same kind of data),634,80.1,74.3,68.4,71.2,13.3
