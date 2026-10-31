@@ -1,0 +1,5 @@
+dataset,source,prompts,safe,unsafe,% unsafe,median_words,exact_overlap,near_overlap
+Hinglish & India (new),"written for Kavach, never used in training",40,20,20,50.0,8.0,0,0
+Jailbreak prompts,jackhhao/jailbreak-classification (test split),229,123,106,46.3,98.0,0,29
+Kavach held-out (own tests),Kavach held-out tests (resemble Kavach data),681,510,171,25.1,9.0,0,0
+ToxicChat (real users),"lmsys/toxic-chat (test split, human-labelled)",1457,1118,339,23.3,12.0,0,28
