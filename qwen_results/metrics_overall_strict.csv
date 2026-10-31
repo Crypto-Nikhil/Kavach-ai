@@ -1,0 +1,6 @@
+System,Prompts,Accuracy,Precision,Recall (unsafe caught),F1,Safe prompts blocked
+Kavach fine-tune (ours),1269,93.1,89.0,86.3,87.5,4.8
+Qwen3Guard-4B base,1269,95.0,86.4,97.7,91.5,5.9
+Kavach v4 (previous RoBERTa),1273,75.3,63.3,89.9,71.0,31.7
+ProtectAI injection v2,1273,78.5,83.1,23.9,29.7,2.1
+toxic-bert,1273,77.8,90.1,28.9,39.7,0.7
