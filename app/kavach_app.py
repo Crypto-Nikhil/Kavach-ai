@@ -116,6 +116,64 @@ def container_ram_gb():
         return 4.0
 
 
+def container_cpus():
+    """CPU cores this app may actually use (cgroup quota), not the host's core count."""
+    n = None
+    try:
+        quota, period = open("/sys/fs/cgroup/cpu.max").read().split()[:2]
+        if quota != "max":
+            n = int(quota) / int(period)
+    except Exception:
+        pass
+    if n is None:
+        try:
+            q = int(open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us").read())
+            per = int(open("/sys/fs/cgroup/cpu/cpu.cfs_period_us").read())
+            if q > 0:
+                n = q / per
+        except Exception:
+            pass
+    try:
+        avail = len(os.sched_getaffinity(0))
+    except Exception:
+        avail = os.cpu_count() or 2
+    n = avail if n is None else min(n, avail)
+    return max(1, min(int(round(n)) or 1, 8))
+
+
+def speed_up_on_cpu(model, tok):
+    """bfloat16 is slow on most CPUs. Convert layer by layer to 8-bit weights with float32 maths:
+    faster and still small. Self-tested; if anything fails, the original model is kept."""
+    import gc
+    import torch
+    try:
+        from torch.ao.quantization import quantize_dynamic
+    except Exception:
+        return model
+    if next(model.parameters()).dtype != torch.bfloat16:
+        return model
+    try:
+        base = model.get_base_model() if hasattr(model, "get_base_model") else model
+        for layer in base.model.layers:
+            layer.float()
+            quantize_dynamic(layer, {torch.nn.Linear}, dtype=torch.qint8, inplace=True)
+            gc.collect()
+        base.model.norm.float()
+        base.model.embed_tokens.float()
+        if hasattr(base.model, "rotary_emb"):
+            base.model.rotary_emb.float()
+        base.lm_head = quantize_dynamic(torch.nn.Sequential(base.lm_head.float()), {torch.nn.Linear},
+                                        dtype=torch.qint8)[0]
+        gc.collect()
+        enc = tok(tok.apply_chat_template([{"role": "user", "content": "hello"}], tokenize=False),
+                  return_tensors="pt", add_special_tokens=False)
+        with torch.no_grad():
+            model.generate(**enc, max_new_tokens=4, do_sample=False, pad_token_id=tok.pad_token_id)
+        return model
+    except Exception:
+        return None                                   # caller reloads the plain model
+
+
 def load_weights(cls, model_id, token, dt, **kw):
     try:
         return cls.from_pretrained(model_id, token=token, dtype=dt, **kw)          # newer transformers
@@ -143,7 +201,18 @@ def load_engine(model_id, adapter_dir):
         model = PeftModel.from_pretrained(model, adapter_dir, token=token)
     model.eval()
     if not torch.cuda.is_available():
-        torch.set_num_threads(max(1, os.cpu_count() or 1))
+        torch.set_num_threads(container_cpus())       # the cores THIS app gets, not the whole server's
+        fast = speed_up_on_cpu(model, tok)
+        if fast is None:                               # 8-bit mode failed -> clean reload, plain mode
+            import gc
+            del model
+            gc.collect()
+            model = load_weights(AutoModelForCausalLM, model_id, token, dt, low_cpu_mem_usage=True).eval()
+            if adapter_dir:
+                from peft import PeftModel
+                model = PeftModel.from_pretrained(model, adapter_dir, token=token).eval()
+        else:
+            model = fast
     return tok, model
 
 
