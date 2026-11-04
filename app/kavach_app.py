@@ -400,14 +400,22 @@ def engine_handles():
         return load_engine(spec["model"], adapter_dir if spec["adapter"] else "")
 
 
-engine_handles()          # load the model as soon as the page opens, so the first check is fast
+@st.cache_data(max_entries=2000, show_spinner=False)
+def model_answer(engine_name, model_id, adapter, text):
+    """The model's verdict for one prompt. Cached for every visitor: a prompt already checked
+    (like the sample prompts) comes back instantly. The customer's policy is applied afterwards,
+    so changing presets or guardrails never needs the model again."""
+    tok, model = load_engine(model_id, adapter)
+    t0 = time.perf_counter()
+    safety, cats, raw = classify(tok, model, text, max_tokens=1024 if has_gpu() else 512)
+    return safety, cats, raw, (time.perf_counter() - t0) * 1000
 
 
 def run_one(text):
-    tok, model = engine_handles()
-    t0 = time.perf_counter()
-    safety, cats, raw = classify(tok, model, text)
-    ms = (time.perf_counter() - t0) * 1000
+    spec = ENGINES[engine]
+    with st.spinner(f"{engine} is checking…"):
+        engine_handles()
+        safety, cats, raw, ms = model_answer(engine, spec["model"], adapter_dir if spec["adapter"] else "", text)
     action, triggered, reason = decide(safety, cats, policy, unsure_mode)
     return {"prompt": text, "result": action, "categories": ", ".join(n for n, _ in triggered) or "None",
             "model_verdict": safety, "engine": engine, "latency_ms": round(ms), "_triggered": triggered,
@@ -506,3 +514,9 @@ with tab_history:
 
 st.markdown(f'<p style="text-align:center;color:#8A97AE;font-size:.8rem;margin-top:28px">'
             f'KAVACH.ai · {VERSION} · Customizable AI security · Engine: {engine}</p>', unsafe_allow_html=True)
+
+# load the model after the page is drawn, so visitors see the app immediately
+_warm = st.empty()
+with _warm:
+    engine_handles()
+_warm.empty()
