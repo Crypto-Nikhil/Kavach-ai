@@ -6,11 +6,11 @@
 
 ### The policy layer for AI safety: every company decides what its AI blocks, flags or allows.
 
-[![Live demo](https://img.shields.io/badge/Live%20demo-Try%20it%20now-1B3F7A?style=for-the-badge&logo=streamlit&logoColor=white)](https://kavach-ai-prototype-v1.streamlit.app/)
+[![Live demo](https://img.shields.io/badge/Live%20demo-Try%20it%20now-1B3F7A?style=for-the-badge&logo=huggingface&logoColor=white)](https://nikhil280101-kavach-ai.hf.space/)
 [![Status](https://img.shields.io/badge/Status-Prototype%20v1-F28C28?style=for-the-badge)](#where-were-going)
 [![Benchmarked](https://img.shields.io/badge/Benchmarked%20vs-11%20open%20guardrails-2E86DE?style=for-the-badge)](#proof-the-benchmark)
 
-**[Live demo](https://kavach-ai-prototype-v1.streamlit.app/)** · [The problem](#the-problem) · [How it works](#how-it-works) · [Benchmark](#proof-the-benchmark) · [Roadmap](#where-were-going)
+**[Live demo](https://nikhil280101-kavach-ai.hf.space/)** · [The problem](#the-problem) · [How it works](#how-it-works) · [Benchmark](#proof-the-benchmark) · [Roadmap](#where-were-going)
 
 </div>
 
@@ -49,7 +49,7 @@ Every company shipping an AI product needs guardrails. Today's guardrails make o
 
 ## See it in 30 seconds
 
-Open the **[live demo](https://kavach-ai-prototype-v1.streamlit.app/)**:
+Open the **[live demo](https://nikhil280101-kavach-ai.hf.space/)** (hosted on Hugging Face):
 
 1. Pick an **industry preset** in the sidebar: Bank / fintech, Kids education, News & media or Healthcare.
 2. Click a sample prompt, or type your own in any language.
@@ -68,7 +68,7 @@ One engine, three policies: that is the product.
 
 </details>
 
-> The public demo runs **Kavach Lite** on a free CPU, so each check takes a few seconds. The GPU engines (Strict and Precise) respond in under a second.
+> The live demo runs on a GPU, so a new prompt is checked in about a second and repeated prompts are instant. If it has been idle for a couple of days, the first visit takes a few minutes to wake up.
 
 ---
 
